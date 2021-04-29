@@ -3,4 +3,6 @@ project(proj)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(proj main.cpp)
+add_executable(proj main.cpp
+        Graph.h
+        MutablePriorityQueue.h)
