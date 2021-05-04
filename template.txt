@@ -1,0 +1,19 @@
+n_nodes
+nodes
+
+n_edges
+edges (partida,destino,peso)
+
+n_casas
+casas
+
+n_lojas
+lojas
+
+n_carregadores
+carregadores
+
+n_encomendas
+encomendas <id_loja, id_casa>
+
+id da garagem

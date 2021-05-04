@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/PROJ.dir/src/main.cpp.o -o PROJ  lib/libgtest_maind.a lib/libgmock_maind.a ../lib/GraphViewerCpp/lib/libgraphviewer.a lib/libgmockd.a lib/libgtestd.a -lpthread -lsfml-graphics -lsfml-window -lsfml-system -lpthread -lX11 
