@@ -22,8 +22,8 @@ class Vertex;
 
 typedef struct node_data
 {
-    float x;
-    float y;
+    double x;
+    double y;
     bool is_casa=false;
     bool is_loja=false;
     bool is_carregador=false;
@@ -43,9 +43,9 @@ class Vertex {
 	bool visited = false;        // auxiliary field
 	bool processing = false;    // auxiliary field
 
-    Vertex(float x, float y);
+    Vertex(double x, double y);
     Vertex(node_data in);
-	void addEdge(Vertex *dest, int dest_id, double w);
+	void addEdge(Vertex *dest, unsigned long dest_id, double w);
 	double weightTo(Vertex *dest);
 	node_data getInfo() const;
 	double getDist() const;
@@ -56,7 +56,7 @@ class Vertex {
 	friend class MutablePriorityQueue<Vertex>;
 };
 
-Vertex::Vertex(float x, float y) {
+Vertex::Vertex(double x, double y) {
    info.x=x;
    info.y=y;
 }
@@ -125,10 +125,10 @@ void Vertex::printVertex()
 class Edge {
 public:
 	Vertex *dest;      // destination vertex
-	int dest_id;
+    unsigned long dest_id;
 	double weight;         // edge weight
 
-	Edge(Vertex *d, int dest_id, double w);
+	Edge(Vertex *d, unsigned long dest_id, double w);
 
 	friend class Graph;
 
@@ -136,7 +136,7 @@ public:
 };
 
 
-Edge::Edge(Vertex *d, int dest_id, double w){
+Edge::Edge(Vertex *d, unsigned long dest_id, double w){
     dest=d;
     weight=w;
     this->dest_id=dest_id;
@@ -176,7 +176,7 @@ vector<Vertex *> Graph::getVertexSet() const {
 	return vertexSet;
 }
 
-void Vertex::addEdge(Vertex *d, int dest_id, double w) {
+void Vertex::addEdge(Vertex *d, unsigned long dest_id, double w) {
     Edge edge(d, dest_id,w);
     adj.push_back(edge);
 }

@@ -2,20 +2,25 @@
 #include "Graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <string>
 #include <fstream>
+#include<map>
 #include "graphviewer.h"
 
 typedef struct encomenda
 {
-    int origem;
-    int destino;
+    unsigned long  origem;
+    unsigned long  destino;
 }encomenda;
 
-class Map{
+class City_Map{
     public:
     Graph graph;
-    vector<int> casas, lojas, carregadores;
+    vector< unsigned long> casas, lojas, carregadores;
     vector<encomenda> encomendas;
-    int garagem;
+     unsigned long garagem;
+    map< unsigned long, Vertex*> vextexes;
+
 };
