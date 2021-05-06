@@ -2,42 +2,43 @@
 
 City_Map read_file(string filename);
 void print_gui(City_Map city_Map);
-City_Map read_folder(char *folder);
+City_Map read_folder(string folder);
 void read_edges(string filename, City_Map &city_map);
 void read_nodes(string filename, City_Map &city_map);
+void read_tags(string filename, City_Map &city_map, string type);
 double distance(node_data v1, node_data v2);
 
 int main() {
 
     City_Map city_map;
-    char str[]={"../src/maps/PortugalMaps/Gondomar"};
-    city_map=read_folder(str);
+    string city = "Gondomar";
+    city_map=read_folder(city);
     city_map.garagem=0;
     print_gui(city_map);
     return 0;
 }
 
-City_Map read_folder(char* folder)
+City_Map read_folder(string city)
 {
     City_Map city_map;
-    string foldername(folder);
-    char *token= strtok(folder, "/");
+    string original = city;
+    city[0] = city[0] + 32;
 
-    while (strcmp("PortugalMaps",token)!=0)
-    {
-        token = strtok(NULL, "/");
-    }
-    token = strtok(NULL, "/");
-    token[0]=token[0]+32;
-
-    string city(token);
-
-    string nodes_file=foldername+"/nodes_x_y_"+city+".txt";
-    string edges_file=foldername+"/edges_"+city+".txt";
-    cout<<nodes_file<<"\n";
-    cout<<edges_file<<"\n";
+    string nodes_file = "../src/maps/PortugalMaps/" + original + "/nodes_x_y_" + city + ".txt";
+    string edges_file = "../src/maps/PortugalMaps/" + original + "/edges_" + city + ".txt";
+    string houses_file = "../src/maps/TagExamples/" + original + "/t01_tags_" + city + ".txt";
+    string stores_file = "../src/maps/TagExamples/" + original + "/t02_tags_" + city + ".txt";
+    string rechargers_file = "../src/maps/TagExamples/" + original + "/t03_tags_" + city + ".txt";
+    cout << nodes_file << "\n";
+    cout << edges_file << "\n";
+    cout << houses_file << "\n";
+    cout << stores_file << "\n";
+    cout << rechargers_file << "\n";
     read_nodes(nodes_file,city_map);
     read_edges(edges_file,city_map);
+    read_tags(houses_file, city_map, "casa");
+    read_tags(stores_file, city_map, "loja");
+    read_tags(rechargers_file, city_map, "carregador");
 
     return city_map;
 }
@@ -105,6 +106,52 @@ void read_nodes(string filename, City_Map &city_map)
     file.close();
 }
 
+void read_tags(string filename, City_Map &city_map, string type) {
+    fstream file;
+    int n_tags, n_nodes;
+    unsigned long id;
+    Vertex *v;
+    file.open(filename,ios::in);  // open a file to perform write operation using file object
+
+    if (file.is_open()) {   //checking whether the file is open
+        string line;
+
+        getline(file, line);
+        sscanf(line.c_str(), "%d", &n_tags);
+
+        for (int i = 0; i < n_tags; i++) {
+            getline(file, line);
+            getline(file, line);
+            sscanf(line.c_str(), "%d", &n_nodes);
+
+            for (int j = 0; j < n_nodes; j++){
+                getline(file, line);
+                sscanf(line.c_str(), "%d", &id);
+
+                if(type == "casa") {
+                    city_map.casas.push_back(id);
+                    city_map.vextexes.at(id)->info.is_casa = true;
+                }
+
+                else if(type == "loja") {
+                    city_map.lojas.push_back(id);
+                    city_map.vextexes.at(id)->info.is_loja = true;
+                }
+
+                else {
+                    city_map.carregadores.push_back(id);
+                    city_map.vextexes.at(id)->info.is_carregador = true;
+                }
+            }
+
+        }
+    }
+    else{
+        printf("Error opening tags file\n");
+        exit(1);
+    }
+    file.close();
+}
 
 
 double distance(node_data v1, node_data v2)

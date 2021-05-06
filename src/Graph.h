@@ -163,7 +163,11 @@ public:
 
 	vector<Vertex *> getVertexSet() const;
 
+    vector<node_data> dfs() const;
 
+    vector<node_data> bfs(Vertex *v) const;
+
+    void dfsVisit(Vertex *v, vector<node_data> res) const;
 };
 
 
@@ -203,6 +207,50 @@ bool Graph::addVertex(Vertex *vertex) {
 
 	vertexSet.push_back(vertex);
 	return true;
+}
+
+vector<node_data> Graph::dfs() const {
+    for (Vertex *v : vertexSet)
+        v->visited = false;
+
+    vector<node_data> res;
+
+    for (Vertex *v : vertexSet)
+        if(!v->visited)
+            dfsVisit(v, res);
+
+    return res;
+}
+
+void Graph::dfsVisit(Vertex *v, vector<node_data> res) const {
+    v->visited = true;
+    res.push_back(v->info);
+    for (Edge w : v->adj)
+        if (!w.dest->visited)
+            dfsVisit(w.dest, res);
+}
+
+vector<node_data> Graph::bfs(Vertex *v) const {
+
+    vector<node_data> res;
+    int index = findVertexIndex(v);
+    for (Vertex *v : vertexSet)
+        v->visited = false;
+    queue<Vertex*> temp;
+    vertexSet[index]->visited = true;
+    temp.push(vertexSet[index]);
+    res.push_back(vertexSet[index]->info);
+    while (!temp.empty()) {
+        for (Edge w : temp.front()->adj)
+            if (!w.dest->visited) {
+                temp.push(w.dest);
+                w.dest->visited = true;
+                res.push_back(w.dest->info);
+            }
+        temp.pop();
+    }
+    return res;
+
 }
 
 /*

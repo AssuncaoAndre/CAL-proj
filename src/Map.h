@@ -18,9 +18,9 @@ typedef struct encomenda
 class City_Map{
     public:
     Graph graph;
-    vector< unsigned long> casas, lojas, carregadores;
+    vector<unsigned long> casas, lojas, carregadores;
     vector<encomenda> encomendas;
-     unsigned long garagem;
-    map< unsigned long, Vertex*> vextexes;
+    unsigned long garagem;
+    map<unsigned long, Vertex*> vextexes;
 
 };
