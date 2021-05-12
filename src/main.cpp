@@ -10,10 +10,14 @@ double distance(node_data v1, node_data v2);
 
 int main() {
 
+    string city;
+    printf("Enter the city to load the map from: ");
+    cin>>city;
     City_Map city_map;
-    string city = "Gondomar";
+
     city_map=read_folder(city);
-    city_map.garagem=city_map.vertexes.begin()->first;
+    city_map.garagem=1199479655;
+    //112624394;
     city_map.graph.bfs(city_map.vertexes.at(city_map.garagem));
 
     city_map.remove_non_visited();
@@ -31,9 +35,9 @@ City_Map read_folder(string city)
 
     string nodes_file = "../src/maps/PortugalMaps/" + original + "/nodes_x_y_" + city + ".txt";
     string edges_file = "../src/maps/PortugalMaps/" + original + "/edges_" + city + ".txt";
-    string houses_file = "../src/maps/TagExamples/" + original + "/t01_tags_" + city + ".txt";
-    string stores_file = "../src/maps/TagExamples/" + original + "/t02_tags_" + city + ".txt";
-    string rechargers_file = "../src/maps/TagExamples/" + original + "/t03_tags_" + city + ".txt";
+    string houses_file = "../src/maps/TagExamples/" + original + "/t10_tags_" + city + ".txt";
+    string stores_file = "../src/maps/TagExamples/" + original + "/t04_tags_" + city + ".txt";
+    string rechargers_file = "../src/maps/TagExamples/" + original + "/t08_tags_" + city + ".txt";
 
     read_nodes(nodes_file,city_map);
     read_edges(edges_file,city_map);
@@ -103,7 +107,7 @@ void read_nodes(string filename, City_Map &city_map)
         }
     }
     else{
-        printf("Error opening nodes file\n");
+        printf("That city does not exist\n");
         exit(1);
     }
     file.close();
@@ -178,24 +182,21 @@ void print_gui(City_Map city_map){
     {
         node_data data=it->second->info;
             GraphViewer::Node &node = gv.addNode(it->first,sf::Vector2f(data.x,data.y));
-            if(data.is_carregador)
-                node.setColor(GraphViewer::GREEN);
+            node.setColor(GraphViewer::BLACK);
 
             if(data.is_carregador )
                 node.setColor(GraphViewer::YELLOW);
 
             if(data.is_loja)
-                node.setColor(GraphViewer::BLUE);
+                node.setColor(GraphViewer::CYAN);
 
             if(data.is_casa)
-                node.setColor(GraphViewer::LIGHT_GRAY);
-
-            if(data.is_casa && data.is_loja)
-                node.setColor(GraphViewer::PINK);
+                node.setColor(GraphViewer::RED);
 
             if(it->first==garagem)
                 node.setColor(GraphViewer::GREEN);
 
+           // node.setLabel(to_string(it->first));
 
 
         it++;
