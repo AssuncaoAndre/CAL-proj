@@ -22,6 +22,7 @@ class Vertex;
 
 typedef struct node_data
 {
+    unsigned long id;
     double x;
     double y;
     bool is_casa=false;
@@ -50,6 +51,7 @@ class Vertex {
 	node_data getInfo() const;
 	double getDist() const;
 	Vertex *getPath() const;
+	void remove_edges_to_id(unsigned long id);
 	bool operator<(Vertex &vertex) const; // // required by MutablePriorityQueue
 	void printVertex();
     friend class Graph;
@@ -168,6 +170,8 @@ public:
     vector<node_data> bfs(Vertex *v) const;
 
     void dfsVisit(Vertex *v, vector<node_data> res) const;
+
+    void erase_all_edges_to_vertex(Vertex *v, unsigned long id);
 };
 
 
@@ -253,6 +257,22 @@ vector<node_data> Graph::bfs(Vertex *v) const {
 
 }
 
+void Vertex::remove_edges_to_id(unsigned long id)
+{
+    vector<Edge>::iterator it;
+    for(it=adj.begin();it!=adj.end();it++)
+    {
+        if((*it).dest_id==id)
+            adj.erase(it);
+    }
+}
+
+void Graph::erase_all_edges_to_vertex(Vertex *v, unsigned long id) {
+    for(auto edge: v->adj)
+    {
+        edge.dest->remove_edges_to_id(id);
+    }
+}
 /*
  * Adds an edge to a graph (this), given the contents of the source and
  * destination vertices and the edge weight (w).
