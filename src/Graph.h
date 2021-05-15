@@ -16,6 +16,7 @@ using namespace std;
 
 #define INF std::numeric_limits<double>::max()
 
+
 class Edge;
 class Graph;
 class Vertex;
@@ -36,6 +37,7 @@ typedef struct node_data
 class Vertex {
 
     public:
+    double aStar_value;
 	node_data info;                        // content of the vertex
 	vector<Edge> adj;        // outgoing edges
 	double dist = 0;
@@ -73,10 +75,14 @@ Vertex::Vertex(node_data in) {
  */
 
 
+double euclidian_distance(Vertex *src, Vertex *dest)
+{
+    return (sqrt((src->info.x-dest->info.x)*(src->info.x-dest->info.x)+(src->info.y-dest->info.y)*(src->info.y-dest->info.y)));
+}
 
 
 bool Vertex::operator<(Vertex &vertex) const {
-	return this->dist < vertex.dist;
+	return this->aStar_value < vertex.aStar_value;
 }
 
 
@@ -172,6 +178,8 @@ public:
     void dfsVisit(Vertex *v, vector<node_data> res) const;
 
     void erase_all_edges_to_vertex(Vertex *v, unsigned long id);
+
+    void aStar(Vertex *src, Vertex *dest);
 };
 
 
@@ -271,6 +279,56 @@ void Graph::erase_all_edges_to_vertex(Vertex *v, unsigned long id) {
     for(auto edge: v->adj)
     {
         edge.dest->remove_edges_to_id(id);
+    }
+}
+
+
+void Graph::aStar(Vertex *src, Vertex *dest)
+{
+
+    for (Vertex *v : vertexSet)
+    {
+        v->dist = INF;
+        v->aStar_value = INF;
+        v->visited = false;
+        v->path = NULL;
+    }
+    src->dist=0;
+    src->aStar_value=0;
+    MutablePriorityQueue<Vertex> q;
+    q.insert(src);
+
+
+    while( !q.empty() ) {
+        auto v = q.extractMin();
+
+        if(v == dest){
+            break;
+        }
+
+        v->visited = true;
+
+        for(Edge e : v->adj) {
+            Vertex * current = e.dest;
+            double newDist =  v->dist + e.weight;
+
+            if(current->visited) continue;
+
+            if (newDist < current->dist) {
+
+                current->path = v;
+                current->dist = newDist;
+                if (current->aStar_value == INF){
+                    current->aStar_value = current->dist + euclidian_distance(current,dest);
+                    q.insert(current);
+                }
+                else{
+                    current->aStar_value = current->dist + euclidian_distance(current,dest);
+                    q.decreaseKey(current);
+                }
+            }
+        }
+
     }
 }
 /*

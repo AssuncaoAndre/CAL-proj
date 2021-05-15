@@ -17,10 +17,11 @@ typedef struct encomenda
 
 class City_Map{
     public:
+
     Graph graph;
     vector<unsigned long> casas, lojas, carregadores;
     vector<encomenda> encomendas;
-    unsigned long garagem;
+    unsigned long garagem, dest;
     map<unsigned long, Vertex*> vertexes;
 
     void remove_non_visited();

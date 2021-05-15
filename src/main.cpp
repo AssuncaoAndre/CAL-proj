@@ -12,15 +12,20 @@ int main() {
 
     string city;
     printf("Enter the city to load the map from: ");
-    cin>>city;
+    //cin>>city;
     City_Map city_map;
 
-    city_map=read_folder(city);
+    city_map=read_folder("Gondomar");
     city_map.garagem=1199479655;
-    //112624394;
+
+    //city_map.dest=663689378;
+    //city_map.dest=1198840042;
+    city_map.dest=1222473635;
+
     city_map.graph.bfs(city_map.vertexes.at(city_map.garagem));
 
     city_map.remove_non_visited();
+    city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
 
     print_gui(city_map);
 
@@ -175,7 +180,7 @@ void print_gui(City_Map city_map){
 
     // Set coordinates of window center
     map<unsigned long, Vertex*>::iterator it=city_map.vertexes.begin();
-    gv.setCenter(sf::Vector2f(it->second->info.x, it->second->info.y));
+    gv.setCenter(sf::Vector2f(city_map.vertexes.at(city_map.garagem)->info.x, city_map.vertexes.at(city_map.garagem)->info.y));
 
     // Create window
     while (it!=city_map.vertexes.end())
@@ -183,6 +188,8 @@ void print_gui(City_Map city_map){
         node_data data=it->second->info;
             GraphViewer::Node &node = gv.addNode(it->first,sf::Vector2f(data.x,data.y));
             node.setColor(GraphViewer::BLACK);
+
+/*
 
             if(data.is_carregador )
                 node.setColor(GraphViewer::YELLOW);
@@ -196,7 +203,9 @@ void print_gui(City_Map city_map){
             if(it->first==garagem)
                 node.setColor(GraphViewer::GREEN);
 
-           // node.setLabel(to_string(it->first));
+
+            node.setLabel(to_string(it->first));
+*/
 
 
         it++;
@@ -221,8 +230,12 @@ void print_gui(City_Map city_map){
         it++;
     }
 
-
-
+    for (Vertex *a = city_map.vertexes.at(city_map.dest); a!=city_map.vertexes.at(city_map.garagem);a=a->path)
+    {
+        gv.getNode(a->info.id).setColor(GraphViewer::RED);
+    }
+    gv.getNode(city_map.garagem).setColor(GraphViewer::GREEN);
+    gv.getNode(city_map.dest).setColor(GraphViewer::YELLOW);
 
     gv.createWindow(1600, 900);
     gv.join();
