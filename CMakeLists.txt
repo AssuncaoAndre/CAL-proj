@@ -19,6 +19,6 @@ file(GLOB PROJ_FILES CONFIGURE_DEPENDS
 add_executable(PROJ
         src/main.cpp
         ${PROJ_FILES}
-        )
+        src/Carrinha.h)
 
 target_link_libraries(PROJ gtest_main gmock_main graphviewer)

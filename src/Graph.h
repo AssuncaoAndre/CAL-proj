@@ -179,7 +179,7 @@ public:
 
     void erase_all_edges_to_vertex(Vertex *v, unsigned long id);
 
-    void aStar(Vertex *src, Vertex *dest);
+    double aStar(Vertex *src, Vertex *dest);
 };
 
 
@@ -283,7 +283,7 @@ void Graph::erase_all_edges_to_vertex(Vertex *v, unsigned long id) {
 }
 
 
-void Graph::aStar(Vertex *src, Vertex *dest)
+double Graph::aStar(Vertex *src, Vertex *dest)
 {
 
     for (Vertex *v : vertexSet)
@@ -330,6 +330,7 @@ void Graph::aStar(Vertex *src, Vertex *dest)
         }
 
     }
+    return dest->dist;
 }
 /*
  * Adds an edge to a graph (this), given the contents of the source and

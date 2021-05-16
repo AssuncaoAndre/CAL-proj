@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#define DIST_TO_KM 0.00000001
 City_Map read_file(string filename);
 void print_gui(City_Map city_Map);
 City_Map read_folder(string folder);
@@ -11,22 +12,26 @@ double distance(node_data v1, node_data v2);
 int main() {
 
     string city;
-    printf("Enter the city to load the map from: ");
+    //printf("Enter the city to load the map from: ");
     //cin>>city;
     City_Map city_map;
 
     city_map=read_folder("Gondomar");
+
     city_map.garagem=1199479655;
 
     //city_map.dest=663689378;
     //city_map.dest=1198840042;
-    city_map.dest=1222473635;
+    city_map.loja=1222473635;
 
     city_map.graph.bfs(city_map.vertexes.at(city_map.garagem));
 
     city_map.remove_non_visited();
-    city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
+    city_map.fill_encomendas();
 
+    city_map.plan_routes();
+/*    double dist=city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
+    printf("dist: %.2lf km\n",dist*DIST_TO_KM);*/
     print_gui(city_map);
 
     return 0;
@@ -49,6 +54,7 @@ City_Map read_folder(string city)
     read_tags(houses_file, city_map, "casa");
     read_tags(stores_file, city_map, "loja");
     read_tags(rechargers_file, city_map, "carregador");
+
 
     return city_map;
 }
@@ -200,12 +206,12 @@ void print_gui(City_Map city_map){
             if(data.is_casa)
                 node.setColor(GraphViewer::RED);
 
-            if(it->first==garagem)
-                node.setColor(GraphViewer::GREEN);
-
 
             node.setLabel(to_string(it->first));
+
 */
+            if(it->first==garagem)
+                node.setColor(GraphViewer::GREEN);
 
 
         it++;
@@ -229,13 +235,35 @@ void print_gui(City_Map city_map){
 
         it++;
     }
+    list<Vertex*>::iterator it_l;
 
-    for (Vertex *a = city_map.vertexes.at(city_map.dest); a!=city_map.vertexes.at(city_map.garagem);a=a->path)
+    for(it_l=city_map.carrinhas[0].route.begin();it_l!=city_map.carrinhas[0].route.end();it_l++)
+    {
+        gv.getNode((*it_l)->info.id).setColor(GraphViewer::RED);
+    }
+    for(it_l=city_map.carrinhas[1].route.begin();it_l!=city_map.carrinhas[1].route.end();it_l++)
+    {
+        gv.getNode((*it_l)->info.id).setColor(GraphViewer::GREEN);
+
+    }
+    for(it_l=city_map.carrinhas[2].route.begin();it_l!=city_map.carrinhas[2].route.end();it_l++)
+    {
+        gv.getNode((*it_l)->info.id).setColor(GraphViewer::YELLOW);
+    }
+        printf("Distância percorrida pela carrinha 1: %.2lf km\n",city_map.carrinhas[0].dist*DIST_TO_KM);
+        printf("Distância percorrida pela carrinha 2: %.2lf km\n",city_map.carrinhas[1].dist*DIST_TO_KM);
+        printf("Distância percorrida pela carrinha 3: %.2lf km\n",city_map.carrinhas[2].dist*DIST_TO_KM);
+
+    for(auto i:city_map.encomendas)
+    {
+        gv.getNode(i).setColor(GraphViewer::CYAN);
+    }
+/*    for (Vertex *a = city_map.vertexes.at(city_map.loja); a!=city_map.vertexes.at(city_map.garagem);a=a->path)
     {
         gv.getNode(a->info.id).setColor(GraphViewer::RED);
     }
     gv.getNode(city_map.garagem).setColor(GraphViewer::GREEN);
-    gv.getNode(city_map.dest).setColor(GraphViewer::YELLOW);
+    gv.getNode(city_map.loja).setColor(GraphViewer::YELLOW);*/
 
     gv.createWindow(1600, 900);
     gv.join();

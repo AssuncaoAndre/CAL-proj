@@ -419,6 +419,9 @@
 		<Unit filename="/home/andre/Documents/feup/CAL/CAL-proj/lib/googletest-master/googletest/src/gtest_main.cc">
 			<Option target="gtest_main"/>
 		</Unit>
+		<Unit filename="/home/andre/Documents/feup/CAL/CAL-proj/src/Carrinha.h">
+			<Option target="PROJ"/>
+		</Unit>
 		<Unit filename="/home/andre/Documents/feup/CAL/CAL-proj/src/main.cpp">
 			<Option target="PROJ"/>
 		</Unit>
