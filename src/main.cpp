@@ -28,7 +28,6 @@ int main() {
 
     city_map.remove_non_visited();
     city_map.fill_encomendas();
-
     city_map.plan_routes();
 /*    double dist=city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
     printf("dist: %.2lf km\n",dist*DIST_TO_KM);*/
