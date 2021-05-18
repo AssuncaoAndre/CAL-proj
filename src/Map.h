@@ -32,6 +32,7 @@ class City_Map{
     void plan_routes();
     int get_carrinha_menos_ocupada(Vertex *dest);
     int get_min_dist(Vertex *dest);
+    bool has_encomenda(Vertex *dest, Carrinha *carrinha);
     void add_vertex_to_route(Vertex *dest, Carrinha *carrinha);
     list<Vertex*> get_list_from_path(Vertex *dest);
 };
@@ -89,24 +90,23 @@ void City_Map::plan_routes() {
     for (int i=0;i<n_carrinhas;i++)
         carrinhas.push_back(Carrinha(vertexes.at(loja)));
 
-    //get_seeds();
+    get_seeds();
 
     int carrinha_to_add;
     for (int i=0;i<encomendas.size();i++)
     {
 
-        //carrinha_to_add=get_carrinha_menos_ocupada(vertexes.at(encomendas[i]));
-        carrinha_to_add = get_min_dist(vertexes.at(encomendas[i]));
+        carrinha_to_add=get_carrinha_menos_ocupada(vertexes.at(encomendas[i]));
 
-
-        add_vertex_to_route(vertexes.at(encomendas[i]),&carrinhas[carrinha_to_add]);
+        if (carrinha_to_add != -1)
+            add_vertex_to_route(vertexes.at(encomendas[i]),&carrinhas[carrinha_to_add]);
     }
     /*get_seeds();*/
 }
 
 int City_Map::get_carrinha_menos_ocupada(Vertex *dest)
 {
-    double min=INF;
+    /*double min=INF;
     int min_i;
     for(int i=0;i<n_carrinhas;i++)
     {
@@ -119,6 +119,12 @@ int City_Map::get_carrinha_menos_ocupada(Vertex *dest)
         }
 
     }
+    return get_min_dist(dest);*/
+    for (int i = 0; i < n_carrinhas; i++) {
+        if (has_encomenda(dest, &carrinhas[i]))
+            return -1;
+    }
+
     return get_min_dist(dest);
 }
 
@@ -153,6 +159,15 @@ int City_Map::get_min_dist(Vertex *dest) {
     }
 
     return min_i;
+}
+
+bool City_Map::has_encomenda(Vertex *dest, Carrinha *carrinha) {
+    for (auto it = carrinha->route.begin(); it != carrinha->route.end(); ++it) {
+        if (*it == dest)
+            return true;
+    }
+
+    return false;
 }
 
 void City_Map::add_vertex_to_route(Vertex *dest, Carrinha *carrinha) {
@@ -242,7 +257,7 @@ void City_Map::get_seeds() {
     }
 
     add_vertex_to_route(vertexes.at(*max_i3), &carrinhas[2]);
-    encomendas.erase(max_i1);
+    /*encomendas.erase(max_i1);
     encomendas.erase(max_i2);
-    encomendas.erase(max_i3);
+    encomendas.erase(max_i3);*/
 }
