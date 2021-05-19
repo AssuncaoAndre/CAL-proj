@@ -22,19 +22,22 @@ class City_Map{
     int n_carrinhas=3;
     Graph graph;
     vector<unsigned long> casas, lojas, carregadores;
-    vector<unsigned long> encomendas;
+    vector<unsigned long> encomendas, postos;
     unsigned long garagem, loja;
     map<unsigned long, Vertex*> vertexes;
 
     void get_seeds();
     void fill_encomendas();
+    void fill_postos();
     void remove_non_visited();
     void plan_routes();
+    void add_carregadores(Carrinha *carrinha);
     int get_carrinha_menos_ocupada(Vertex *dest);
     int get_min_dist(Vertex *dest);
     bool has_encomenda(Vertex *dest, Carrinha *carrinha);
     void add_vertex_to_route(Vertex *dest, Carrinha *carrinha);
     list<Vertex*> get_list_from_path(Vertex *dest);
+    Vertex* closest_carregador(Vertex* dest);
 };
 
 void City_Map::remove_non_visited() {
@@ -82,6 +85,14 @@ void City_Map::fill_encomendas() {
     }
 }
 
+void City_Map::fill_postos() {
+    for (auto v: vertexes) {
+        if (v.second->info.is_carregador) {
+            postos.push_back(v.first);
+        }
+    }
+}
+
 void City_Map::plan_routes() {
 
     //get_carrinha_menos_ocupada em de ser substituido por
@@ -101,7 +112,10 @@ void City_Map::plan_routes() {
         if (carrinha_to_add != -1)
             add_vertex_to_route(vertexes.at(encomendas[i]),&carrinhas[carrinha_to_add]);
     }
-    /*get_seeds();*/
+
+    for (int i = 0; i < n_carrinhas; i++) {
+        add_carregadores(&carrinhas[i]);
+    }
 }
 
 int City_Map::get_carrinha_menos_ocupada(Vertex *dest)
@@ -225,6 +239,41 @@ list<Vertex*>City_Map::get_list_from_path(Vertex *dest) {
         a->visited=true;
     }
     return l;
+}
+
+Vertex * City_Map::closest_carregador(Vertex *dest) {
+    double min = INF;
+    int min_i;
+    for (int i = 0; i < postos.size(); i++) {
+        double dist = euclidian_distance(vertexes.at(postos[i]), dest);
+        if (dist < min) {
+            min = dist;
+            min_i = i;
+        }
+    }
+    return vertexes.at(postos[min_i]);
+}
+
+void City_Map::add_carregadores(Carrinha *carrinha) {
+    list<Vertex*>::iterator it = carrinha->route.begin();
+    list<Vertex*>::iterator prev = carrinha->route.begin();
+    ++it;
+
+    while (it != carrinha->route.end()) {
+        if (carrinha->bateria <= 0) {
+            Vertex* v = closest_carregador(*it);
+            add_vertex_to_route(v, carrinha);
+            carrinha->bateria = 5000;
+        }
+
+        else  {
+            double dist = euclidian_distance(*prev, *it);
+            carrinha->bateria -= dist * 0.00001;
+        }
+
+        ++it;
+        ++prev;
+    }
 }
 
 void City_Map::get_seeds() {

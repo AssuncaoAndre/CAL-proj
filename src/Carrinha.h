@@ -11,6 +11,7 @@ public:
 
     list<Vertex*> route;
     double dist=0;
+    double bateria = 5000;
 
 
     Carrinha(Vertex *loja);

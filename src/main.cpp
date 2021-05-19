@@ -29,6 +29,7 @@ int main() {
 
     city_map.remove_non_visited();
     city_map.fill_encomendas();
+    city_map.fill_postos();
     city_map.plan_routes();
 /*    double dist=city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
     printf("dist: %.2lf km\n",dist*DIST_TO_KM);*/
@@ -278,6 +279,9 @@ void print_gui(City_Map city_map){
             if ((*it_l)->info.is_casa) {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
             }
+            else if ((*it_l)->info.is_carregador) {
+                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
+            }
             else {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::RED);
             }
@@ -299,6 +303,9 @@ void print_gui(City_Map city_map){
             if ((*it_l)->info.is_casa) {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
             }
+            else if ((*it_l)->info.is_carregador) {
+                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
+            }
             else {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::GREEN);
             }
@@ -319,6 +326,9 @@ void print_gui(City_Map city_map){
         {
             if ((*it_l)->info.is_casa) {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
+            }
+            else if ((*it_l)->info.is_carregador) {
+                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
             }
             else {
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::YELLOW);
