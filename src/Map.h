@@ -95,11 +95,9 @@ void City_Map::fill_postos() {
 
 void City_Map::plan_routes() {
 
-    //get_carrinha_menos_ocupada em de ser substituido por
-    //uma carrinha que faça aumentar o minimo possivel o máximo do percurso
 
     for (int i=0;i<n_carrinhas;i++)
-        carrinhas.push_back(Carrinha(vertexes.at(loja)));
+        carrinhas.push_back(Carrinha(vertexes.at(loja),i));
 
     get_seeds();
 
@@ -109,7 +107,7 @@ void City_Map::plan_routes() {
 
         carrinha_to_add=get_carrinha_menos_ocupada(vertexes.at(encomendas[i]));
 
-        if (carrinha_to_add != -1)
+        if(vertexes.at(encomendas[i])->info.is_casa && vertexes.at(encomendas[i])->carrinha==-1)
             add_vertex_to_route(vertexes.at(encomendas[i]),&carrinhas[carrinha_to_add]);
     }
 
@@ -120,29 +118,7 @@ void City_Map::plan_routes() {
 
 int City_Map::get_carrinha_menos_ocupada(Vertex *dest)
 {
-    /*double min=INF;
-    int min_i;
-    for(int i=0;i<n_carrinhas;i++)
-    {
-        if(carrinhas[i].dist==0)
-            return i;
-        if(carrinhas[i].dist<min)
-        {
-            min=carrinhas[i].dist;
-            min_i=i;
-        }
 
-    }
-    return get_min_dist(dest);*/
-    for (int i = 0; i < n_carrinhas; i++) {
-        if (has_encomenda(dest, &carrinhas[i]))
-            return -1;
-    }
-
-    return get_min_dist(dest);
-}
-
-int City_Map::get_min_dist(Vertex *dest) {
     int min_i;
     double min_all = INF;
 
@@ -175,14 +151,8 @@ int City_Map::get_min_dist(Vertex *dest) {
     return min_i;
 }
 
-bool City_Map::has_encomenda(Vertex *dest, Carrinha *carrinha) {
-    for (auto it = carrinha->route.begin(); it != carrinha->route.end(); ++it) {
-        if (*it == dest)
-            return true;
-    }
 
-    return false;
-}
+
 
 void City_Map::add_vertex_to_route(Vertex *dest, Carrinha *carrinha) {
 
@@ -197,25 +167,37 @@ void City_Map::add_vertex_to_route(Vertex *dest, Carrinha *carrinha) {
     {
 
         prev=pos; prev--;
-        //astar1=graph.aStar(*prev,dest);
-        //temp_list=get_list_from_path(dest);
+
         astar1 = euclidian_distance(*prev, dest);
         astar2 = euclidian_distance(dest, *pos);
-        //astar2=graph.aStar(dest,*pos);
         if((astar1+astar2)<min_dist)
         {
             min_dist=astar1+astar2;
             min_pos=pos;
             min_prev = prev;
-            /*graph.aStar(*prev, dest);
-            p1_dest=get_list_from_path(dest);
-            dest_p2=get_list_from_path(*pos);*/
         }
     }
-
+    carrinha->encomendas.push_back(dest->info.id);
+    dest->carrinha=carrinha->id;
     graph.aStar(*min_prev, dest);
     p1_dest = get_list_from_path(dest);
-    dest_p2 = get_list_from_path(*min_pos);
+    graph.aStar(dest, *min_pos);
+    dest_p2= get_list_from_path(*min_pos);
+
+
+    for(auto v: p1_dest)
+    {
+        if(v->info.is_casa)
+            v->carrinha=carrinha->id;
+    }
+
+    for(auto v: dest_p2)
+    {
+        if(v->info.is_casa)
+            v->carrinha=carrinha->id;
+
+    }
+
     next=min_pos;next++;
     carrinha->route.splice(next,p1_dest);
     next++;

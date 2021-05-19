@@ -196,22 +196,10 @@ void print_gui(City_Map city_map){
         GraphViewer::Node &node = gv.addNode(it->first,sf::Vector2f(data.x,data.y));
         node.setColor(GraphViewer::BLACK);
 
-/*
-            if(data.is_carregador )
-                node.setColor(GraphViewer::YELLOW);
-            if(data.is_loja)
-                node.setColor(GraphViewer::CYAN);
-            if(data.is_casa)
-                node.setColor(GraphViewer::RED);
-            node.setLabel(to_string(it->first));
-*/
         if(it->first==garagem)
             node.setColor(GraphViewer::GREEN);
-
-
         it++;
-        //node.setSize(0.0001);
-        //node.setOutlineThickness(0.1);
+
     }
 
     int k=0;
@@ -220,155 +208,83 @@ void print_gui(City_Map city_map){
 
         for (int j=0;j<it->second->adj.size();j++)
         {
+            it->second->adj[j].id=k;
             GraphViewer::Edge &ed = gv.addEdge(k,gv.getNode(it->first),gv.getNode(it->second->adj[j].dest_id),GraphViewer::Edge::EdgeType::UNDIRECTED);
 
             ed.setColor(GraphViewer::BLACK);
 
-            //ed.setThickness(0.0001);
             k++;
         }
 
         it++;
     }
 
-    /*for(it_l=city_map.carrinhas[0].route.begin();it_l!=city_map.carrinhas[0].route.end();it_l++)
-    {
-        gv.getNode((*it_l)->info.id).setColor(GraphViewer::RED);
-    }
-    for(it_l=city_map.carrinhas[1].route.begin();it_l!=city_map.carrinhas[1].route.end();it_l++)
-    {
-        gv.getNode((*it_l)->info.id).setColor(GraphViewer::GREEN);
 
-    }
-    for(it_l=city_map.carrinhas[2].route.begin();it_l!=city_map.carrinhas[2].route.end();it_l++)
-    {
-        gv.getNode((*it_l)->info.id).setColor(GraphViewer::YELLOW);
-    }*/
-    printf("Distância percorrida pela carrinha 1: %f km\n",city_map.carrinhas[0].dist);
-    printf("Distância percorrida pela carrinha 2: %f km\n",city_map.carrinhas[1].dist);
-    printf("Distância percorrida pela carrinha 3: %f km\n",city_map.carrinhas[2].dist);
+    printf("Distância percorrida pela carrinha 1: %.2lf km\n",city_map.carrinhas[0].dist/1000);
+    printf("Distância percorrida pela carrinha 2: %.2lf km\n",city_map.carrinhas[1].dist/1000);
+    printf("Distância percorrida pela carrinha 3: %.2lf km\n",city_map.carrinhas[2].dist/1000);
     list<Vertex*>::iterator it_l;
-
-    /*for(auto i:city_map.encomendas)
-    {
-        gv.getNode(i).setColor(GraphViewer::CYAN);
-    }*/
-/*    for (Vertex *a = city_map.vertexes.at(city_map.loja); a!=city_map.vertexes.at(city_map.garagem);a=a->path)
-    {
-        gv.getNode(a->info.id).setColor(GraphViewer::RED);
-    }
-    gv.getNode(city_map.garagem).setColor(GraphViewer::GREEN);
-    gv.getNode(city_map.loja).setColor(GraphViewer::YELLOW);*/
+    list<Vertex*>::iterator next_l;
+    vector<unsigned long>::iterator it_v;
 
     gv.createWindow(1600, 900);
 
     int i = 1;
 
     while(gv.isWindowOpen()) {
-        sleep(2);
-
-        gv.lock();
-
-        for(it_l=city_map.carrinhas[2].route.begin();it_l!=city_map.carrinhas[2].route.end();it_l++)
+        for(int i=0;i<city_map.n_carrinhas;i++)
         {
-            gv.getNode((*it_l)->info.id).setColor(GraphViewer::BLACK);
-        }
+            gv.lock();
+            int prev=i-1;
+            if(prev<0)
+                prev=city_map.n_carrinhas-1;
+            for(it_l=city_map.carrinhas[prev].route.begin();it_l!=city_map.carrinhas[prev].route.end();it_l++)
+            {
+                gv.getNode((*it_l)->info.id).setColor(GraphViewer::BLACK);
 
-        for(it_l=city_map.carrinhas[0].route.begin();it_l!=city_map.carrinhas[0].route.end();it_l++)
-        {
-            if ((*it_l)->info.is_casa) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
+
+
+                next_l=it_l;
+                next_l++;
+
+                if(next_l==city_map.carrinhas[prev].route.end())
+                    continue;
+
+                for(auto e:(*it_l)->adj)
+                {
+                    if(e.dest_id==(*next_l)->info.id)
+                    {
+                        gv.getEdge(e.id).setColor(GraphViewer::BLACK);
+                    }
+                }
             }
-            else if ((*it_l)->info.is_carregador) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
-            }
-            else {
+            for(it_l=city_map.carrinhas[i].route.begin();it_l!=city_map.carrinhas[i].route.end();it_l++)
+            {
+                //TODO pintar carregadores utilizados a magenta
+
+                next_l=it_l;
+                next_l++;
                 gv.getNode((*it_l)->info.id).setColor(GraphViewer::RED);
+                if(next_l==city_map.carrinhas[i].route.end())
+                    continue;
+                for(auto e:(*it_l)->adj)
+                {
+
+                    if(e.dest_id==(*next_l)->info.id)
+                    {
+                        gv.getEdge(e.id).setColor(GraphViewer::RED);
+                    }
+                }
+
             }
+            for (it_v=city_map.carrinhas[i].encomendas.begin();it_v!=city_map.carrinhas[i].encomendas.end();it_v++)
+            {
+                gv.getNode((*it_v)).setColor(GraphViewer::CYAN);
+            }
+            gv.unlock();
+
+            sleep(2);
         }
-
-        gv.unlock();
-
-        sleep(2);
-
-        gv.lock();
-
-        for(it_l=city_map.carrinhas[0].route.begin();it_l!=city_map.carrinhas[0].route.end();it_l++)
-        {
-            gv.getNode((*it_l)->info.id).setColor(GraphViewer::BLACK);
-        }
-
-        for(it_l=city_map.carrinhas[1].route.begin();it_l!=city_map.carrinhas[1].route.end();it_l++)
-        {
-            if ((*it_l)->info.is_casa) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
-            }
-            else if ((*it_l)->info.is_carregador) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
-            }
-            else {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::GREEN);
-            }
-        }
-
-        gv.unlock();
-
-        sleep(2);
-
-        gv.lock();
-
-        for(it_l=city_map.carrinhas[1].route.begin();it_l!=city_map.carrinhas[1].route.end();it_l++)
-        {
-            gv.getNode((*it_l)->info.id).setColor(GraphViewer::BLACK);
-        }
-
-        for(it_l=city_map.carrinhas[2].route.begin();it_l!=city_map.carrinhas[2].route.end();it_l++)
-        {
-            if ((*it_l)->info.is_casa) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::CYAN);
-            }
-            else if ((*it_l)->info.is_carregador) {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::MAGENTA);
-            }
-            else {
-                gv.getNode((*it_l)->info.id).setColor(GraphViewer::YELLOW);
-            }
-        }
-
-        gv.unlock();
-
-        /*sleep(1);
-        gv.lock();
-
-
-        list<Vertex*>::iterator it_l1, it_l2, it_l3;
-        it_l1 = city_map.carrinhas[0].route.begin();
-        it_l2 = city_map.carrinhas[1].route.begin();
-        it_l3 = city_map.carrinhas[2].route.begin();
-
-        for (int j = 0; j < i; j++) {
-            if (it_l1 != city_map.carrinhas[0].route.end()) {
-                if ((*it_l1)->info.is_casa) gv.getNode((*it_l1)->info.id).setColor(GraphViewer::CYAN);
-                else gv.getNode((*it_l1)->info.id).setColor(GraphViewer::RED);
-                it_l1++;
-            }
-
-            if (it_l2 != city_map.carrinhas[1].route.end()) {
-                if ((*it_l2)->info.is_casa) gv.getNode((*it_l2)->info.id).setColor(GraphViewer::CYAN);
-                else gv.getNode((*it_l2)->info.id).setColor(GraphViewer::GREEN);
-                it_l2++;
-            }
-
-            if (it_l3 != city_map.carrinhas[2].route.end()) {
-                if ((*it_l3)->info.is_casa) gv.getNode((*it_l3)->info.id).setColor(GraphViewer::CYAN);
-                else gv.getNode((*it_l3)->info.id).setColor(GraphViewer::YELLOW);
-                it_l3++;
-            }
-        }
-
-        i++;
-
-        gv.unlock();*/
     }
 
     gv.join();

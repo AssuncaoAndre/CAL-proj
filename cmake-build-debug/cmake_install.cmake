@@ -1,4 +1,4 @@
-# Install script for directory: /home/andre/Documents/feup/CAL/CAL-proj
+# Install script for directory: /home/andre/Documents/feup/CAL/proj/CAL-proj
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,12 +44,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/andre/Documents/feup/CAL/CAL-proj/cmake-build-debug/lib/googletest-master/cmake_install.cmake")
+  include("/home/andre/Documents/feup/CAL/proj/CAL-proj/cmake-build-debug/lib/googletest-master/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/andre/Documents/feup/CAL/CAL-proj/cmake-build-debug/lib/GraphViewerCpp/cmake_install.cmake")
+  include("/home/andre/Documents/feup/CAL/proj/CAL-proj/cmake-build-debug/lib/GraphViewerCpp/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -60,5 +60,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/andre/Documents/feup/CAL/CAL-proj/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/andre/Documents/feup/CAL/proj/CAL-proj/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

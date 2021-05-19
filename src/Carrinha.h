@@ -12,14 +12,17 @@ public:
     list<Vertex*> route;
     double dist=0;
     double bateria = 5000;
+    vector<unsigned long> encomendas;
+    int id;
 
 
-    Carrinha(Vertex *loja);
+    Carrinha(Vertex *loja, int id);
 };
 
-Carrinha::Carrinha(Vertex *loja){
+Carrinha::Carrinha(Vertex *loja, int id){
     route.emplace_back(loja);
     route.emplace_back(loja);
+    this->id=id;
 }
 
 

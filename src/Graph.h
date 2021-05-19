@@ -45,6 +45,7 @@ class Vertex {
 	int queueIndex = 0;        // required by MutablePriorityQueue
 	bool visited = false;        // auxiliary field
 	bool processing = false;    // auxiliary field
+    int carrinha = -1;
 
     Vertex(double x, double y);
     Vertex(node_data in);
@@ -135,6 +136,7 @@ public:
 	Vertex *dest;      // destination vertex
     unsigned long dest_id;
 	double weight;         // edge weight
+	unsigned long id;
 
 	Edge(Vertex *d, unsigned long dest_id, double w);
 
