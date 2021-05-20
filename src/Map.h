@@ -33,11 +33,9 @@ class City_Map{
     void plan_routes();
     void add_carregadores(Carrinha *carrinha);
     int get_carrinha_menos_ocupada(Vertex *dest);
-    int get_min_dist(Vertex *dest);
-    bool has_encomenda(Vertex *dest, Carrinha *carrinha);
     void add_vertex_to_route(Vertex *dest, Carrinha *carrinha);
     list<Vertex*> get_list_from_path(Vertex *dest);
-    Vertex* closest_carregador(Vertex* dest);
+    bool closest_carregador(Vertex* src, double limit, Carrinha* carrinha);
 };
 
 void City_Map::remove_non_visited() {
@@ -71,16 +69,11 @@ void City_Map::remove_non_visited() {
 }
 
 void City_Map::fill_encomendas() {
-    /*int i=0;
-    encomendas.push_back(1198976574);
-    encomendas.push_back(1199479598);
-    encomendas.push_back(1199479624);*/
     for(auto v: vertexes)
     {
         if(v.second->info.is_casa)
         {
             encomendas.push_back(v.first);
-            //i++;
         }
     }
 }
@@ -223,17 +216,27 @@ list<Vertex*>City_Map::get_list_from_path(Vertex *dest) {
     return l;
 }
 
-Vertex * City_Map::closest_carregador(Vertex *dest) {
+bool City_Map::closest_carregador(Vertex *src, double limit, Carrinha *carrinha) {
     double min = INF;
     int min_i;
+    double dist = 0;
     for (int i = 0; i < postos.size(); i++) {
-        double dist = euclidian_distance(vertexes.at(postos[i]), dest);
+        double dist = euclidian_distance(vertexes.at(postos[i]), src);
         if (dist < min) {
             min = dist;
             min_i = i;
         }
     }
-    return vertexes.at(postos[min_i]);
+
+    dist = graph.aStar(src, vertexes.at(postos[min_i]));
+    double score = dist * 0.00001;
+
+    if (score < limit) {
+        add_vertex_to_route(vertexes.at(postos[min_i]), carrinha);
+        return true;
+    }
+
+    else return false;
 }
 
 void City_Map::add_carregadores(Carrinha *carrinha) {
@@ -242,15 +245,28 @@ void City_Map::add_carregadores(Carrinha *carrinha) {
     ++it;
 
     while (it != carrinha->route.end()) {
-        if (carrinha->bateria <= 0) {
-            Vertex* v = closest_carregador(*it);
-            add_vertex_to_route(v, carrinha);
+        if (carrinha->bateria <= 100) {
+            while (!closest_carregador(*it, carrinha->bateria, carrinha)) {
+                --it;
+                --prev;
+                for (Edge e : (*prev)->adj) {
+                    if (e.dest->info.id == (*it)->info.id) {
+                        carrinha->bateria += e.weight * 0.00001;
+                    }
+                }
+            }
+
             carrinha->bateria = 5000;
         }
 
         else  {
-            double dist = euclidian_distance(*prev, *it);
-            carrinha->bateria -= dist * 0.00001;
+            //double dist = euclidian_distance(*prev, *it);
+            //carrinha->bateria -= dist * 0.00001;
+            for (Edge e : (*prev)->adj) {
+                if (e.dest->info.id == (*it)->info.id) {
+                    carrinha->bateria -= e.weight * 0.00001;
+                }
+            }
         }
 
         ++it;
@@ -259,10 +275,44 @@ void City_Map::add_carregadores(Carrinha *carrinha) {
 }
 
 void City_Map::get_seeds() {
-    double max = 0;
-    vector<unsigned long>::iterator max_i1, max_i2, max_i3;
+    double max, dist;
+    vector<vector<unsigned long>::iterator> vec;
 
-    for (auto it = encomendas.begin(); it != encomendas.end(); it++) {
+    for (int i = 0; i < n_carrinhas; i++) {
+        max = 0;
+        vector<unsigned long>::iterator max_i;
+        for (auto it = encomendas.begin(); it != encomendas.end(); ++it) {
+
+            if (i == 0) {
+                dist = euclidian_distance(vertexes.at(loja), vertexes.at(*it));
+                if (dist > max) {
+                    max_i = it;
+                    max = dist;
+                }
+            }
+
+            else {
+                int j = 0;
+                while (j < vec.size()) {
+                    dist = euclidian_distance(vertexes.at(*vec[j]), vertexes.at(*it));
+                    if (dist < max) {
+                        break;
+                    }
+                    j++;
+                }
+
+                if (j == vec.size()) {
+                    max_i = it;
+                    max = dist;
+                }
+            }
+        }
+
+        add_vertex_to_route(vertexes.at(*max_i), &carrinhas[i]);
+        vec.push_back(max_i);
+    }
+
+    /*for (auto it = encomendas.begin(); it != encomendas.end(); it++) {
         double dist = euclidian_distance(vertexes.at(loja), vertexes.at(*it));
 
         if (dist > max) max_i1 = it;
@@ -288,7 +338,7 @@ void City_Map::get_seeds() {
     }
 
     add_vertex_to_route(vertexes.at(*max_i3), &carrinhas[2]);
-    /*encomendas.erase(max_i1);
+    encomendas.erase(max_i1);
     encomendas.erase(max_i2);
     encomendas.erase(max_i3);*/
 }
