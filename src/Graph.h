@@ -102,17 +102,6 @@ Vertex *Vertex::getPath() const {
 }
 
 
-/*double Vertex::weightTo(Vertex *dest) {
-	for (Edge edge : this->adj)
-		if (edge.dest == dest)
-			return edge.weight;
-
-	if (this == dest)
-		return 0;
-
-	return INF;
-}*/
-
 void Vertex::printVertex()
 {
     printf("Vértice: ");

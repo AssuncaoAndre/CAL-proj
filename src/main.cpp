@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include "Map.h"
 
-#define DIST_TO_KM 0.00000001
 City_Map read_file(string filename);
 void print_gui(City_Map city_Map);
 City_Map read_folder(string folder);
@@ -283,6 +282,7 @@ void print_gui(City_Map city_map){
                 }
 
             }
+            gv.getNode(city_map.garagem).setColor(GraphViewer::YELLOW);
             for (it_v=city_map.carrinhas[i].encomendas.begin();it_v!=city_map.carrinhas[i].encomendas.end();it_v++)
             {
                 gv.getNode((*it_v)).setColor(GraphViewer::CYAN);
