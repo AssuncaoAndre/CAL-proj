@@ -13,26 +13,32 @@ double distance(node_data v1, node_data v2);
 int main() {
 
     string city;
-    //printf("Enter the city to load the map from: ");
-    //cin>>city;
+    int n;
+    printf("Enter the city to load the map from: ");
+    cin>>city;
     City_Map city_map;
 
-    city_map=read_folder("Gondomar");
+    city_map=read_folder(city);
 
-    city_map.garagem=1199479655;
+    printf("Enter the node id of the garage: ");
+    cin>>city_map.garagem;
 
-    //city_map.dest=663689378;
-    //city_map.dest=1198840042;
-    city_map.loja=1222473635;
+    printf("Enter the node id of the shop: ");
+    cin>>city_map.loja;
+
+    printf("Enter the number of available trucks: ");
+    cin>>city_map.n_carrinhas;
 
     city_map.graph.bfs(city_map.vertexes.at(city_map.garagem));
 
     city_map.remove_non_visited();
+
     city_map.fill_encomendas();
     city_map.fill_postos();
     city_map.plan_routes();
-/*    double dist=city_map.graph.aStar(city_map.vertexes.at(city_map.garagem),city_map.vertexes.at(city_map.dest));
-    printf("dist: %.2lf km\n",dist*DIST_TO_KM);*/
+
+
+
     print_gui(city_map);
 
     return 0;
@@ -220,16 +226,16 @@ void print_gui(City_Map city_map){
     }
 
 
-    printf("Distância percorrida pela carrinha 1: %.2lf km\n",city_map.carrinhas[0].dist/1000);
+/*    printf("Distância percorrida pela carrinha 1: %.2lf km\n",city_map.carrinhas[0].dist/1000);
     printf("Distância percorrida pela carrinha 2: %.2lf km\n",city_map.carrinhas[1].dist/1000);
     printf("Distância percorrida pela carrinha 3: %.2lf km\n",city_map.carrinhas[2].dist/1000);
     list<Vertex*>::iterator it_l;
     list<Vertex*>::iterator next_l;
-    vector<unsigned long>::iterator it_v;
+    vector<unsigned long>::iterator it_v;*/
 
     gv.createWindow(1600, 900);
 
-    int i = 1;
+   /* int i = 1;
 
     while(gv.isWindowOpen()) {
         for(int i=0;i<city_map.n_carrinhas;i++)
@@ -260,7 +266,7 @@ void print_gui(City_Map city_map){
             }
             for(it_l=city_map.carrinhas[i].route.begin();it_l!=city_map.carrinhas[i].route.end();it_l++)
             {
-                //TODO pintar carregadores utilizados a magenta
+
 
                 next_l=it_l;
                 next_l++;
@@ -281,11 +287,16 @@ void print_gui(City_Map city_map){
             {
                 gv.getNode((*it_v)).setColor(GraphViewer::CYAN);
             }
+
+            for (it_v=city_map.carrinhas[i].carregadores.begin();it_v!=city_map.carrinhas[i].carregadores.end();it_v++)
+            {
+                gv.getNode((*it_v)).setColor(GraphViewer::MAGENTA);
+            }
             gv.unlock();
 
             sleep(2);
         }
-    }
+    }*/
 
     gv.join();
 

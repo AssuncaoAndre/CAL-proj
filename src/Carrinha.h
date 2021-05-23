@@ -13,6 +13,7 @@ public:
     double dist=0;
     double bateria = 5000;
     vector<unsigned long> encomendas;
+    vector<unsigned long> carregadores;
     int id;
 
 
